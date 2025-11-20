@@ -1,126 +1,143 @@
-# AI Agent - CSV数据分析系统
+# Chat with Your Data
 
-基于Aurite框架的智能CSV数据分析系统，支持自然语言查询、安全代码执行和智能结果展示。
+A smart CSV data analysis system that supports natural language queries, secure code execution, and intelligent result display. Supports multiple LLMs including GPT-4, Llama 3.3 70B, Gemini 2.0 Flash, and Qwen 2.5 72B.
 
-## 功能特性
+## Features
 
-1. **CSV上传和预览**
-   - 上传CSV文件并自动预览
-   - 显示数据形状、列信息和示例数据
+1. **CSV Upload and Preview**
+   - Upload CSV files and automatically preview
+   - Display data shape, column information, and sample data
 
-2. **自然语言查询**
-   - 使用OpenAI GPT-4将自然语言问题转换为Pandas代码
-   - 智能理解数据结构和查询意图
+2. **Natural Language Query**
+   - Convert natural language questions to Pandas code using multiple LLMs
+   - Intelligently understand data structure and query intent
+   - Support for GPT-4 (OpenAI API), Llama 3.3 70B, Gemini 2.0 Flash, and Qwen 2.5 72B (OpenRouter API)
 
-3. **安全代码执行**
-   - 在受控环境中执行生成的代码
-   - 支持只读操作，确保数据安全
+3. **Secure Code Execution**
+   - Execute generated code in a controlled environment
+   - Support read-only operations to ensure data security
 
-4. **智能输出**
-   - 自动识别结果类型（数字/表格/图表）
-   - 支持matplotlib和seaborn可视化
-   - 美观的结果展示界面
+4. **Intelligent Output**
+   - Automatically identify result types (numbers/tables/charts)
+   - Support matplotlib and seaborn visualization
+   - Beautiful result display interface
 
-5. **历史记录和可追溯性**
-   - 记录每次查询的问题、代码、结果和CSV哈希
-   - 支持回溯查看历史记录
+5. **History and Traceability**
+   - Record each query's question, code, result, and CSV hash
+   - Support backtracking to view history
+   - Session-based organization of chat history and evaluation metrics
 
-## 环境变量配置
+6. **Evaluation Metrics**
+   - Automatic calculation of code correctness, code quality, and performance metrics
+   - Prompt understanding, requirement coverage, and error recovery analysis
+   - Metrics stored per session in `chat_history/{session_id}/`
 
-创建 `.env` 文件并设置以下环境变量：
+## Environment Variables
+
+Create a `.env` file and set the following environment variables:
 
 ```env
-# OpenAI API Key
-OPENAI_API_KEY=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
+# OpenAI API Key for GPT-4
+OPENAI_API_KEY=your-openai-api-key-here
 
-# Smithery API Configuration
-SMITHERY_API_KEY=30a5c47c-fdc7-4c7a-bc30-d1b99b1c89f9
-SMITHERY_PROFILE_ID=enchanting-finch-Fj3QCf
+# OpenRouter API Key for other models (Llama, Gemini, Qwen)
+OPENROUTER_API_KEY=your-openrouter-api-key-here
 
 # Flask Secret Key (change in production)
 SECRET_KEY=your-secret-key-here
 ```
 
-## 安装和运行
+**Note**: Do not commit your `.env` file to version control. The `.gitignore` file already excludes it.
 
-1. **安装依赖**：
+## Installation and Running
+
+1. **Install dependencies**:
 ```bash
 pip install -r requirements.txt
 ```
 
-2. **设置环境变量**：
-创建 `.env` 文件并填入上述环境变量
+2. **Set environment variables**:
+   Create a `.env` file and fill in the environment variables above
 
-3. **运行应用**：
+3. **Run the application**:
 ```bash
 python frontend.py
 ```
 
-4. **访问应用**：
-浏览器会自动打开 `http://127.0.0.1:5000`
+4. **Access the application**:
+   The browser will automatically open `http://127.0.0.1:5000`
 
-## 项目结构
+## Project Structure
 
 ```
 ISE547project/
-├── frontend.py          # Flask后端应用
-├── aurite_project.py    # Aurite项目配置
-├── config.py            # 配置文件
-├── requirements.txt     # Python依赖
-├── .env                 # 环境变量（需创建）
+├── frontend.py              # Flask backend application
+├── evaluation_metrics.py    # Evaluation metrics calculation
+├── requirements.txt         # Python dependencies
+├── .env                     # Environment variables (create this)
+├── .gitignore              # Git ignore rules
 ├── templates/
-│   └── index.html      # 主HTML模板
+│   └── index.html          # Main HTML template
 ├── static/
 │   ├── css/
-│   │   └── style.css   # 样式文件
+│   │   └── style.css       # Style file
 │   └── js/
-│       └── app.js      # 前端JavaScript
-├── uploads/            # 上传文件存储目录
-├── chat_history/       # 聊天历史存储目录
-└── data/               # 数据存储目录
+│       └── app.js          # Frontend JavaScript
+├── llm_providers/
+│   ├── __init__.py
+│   ├── openai_provider.py  # OpenAI API provider (for GPT-4)
+│   └── openrouter_provider.py  # OpenRouter API provider (for other models)
+├── uploads/                # Uploaded file storage directory
+└── chat_history/           # Chat history storage directory
+    └── {session_id}/       # Per-session directories
+        ├── chat_history.json
+        ├── metrics.json
+        └── metrics_summary.json
 ```
 
-## API端点
+## API Endpoints
 
-- `GET /` - 主页面
-- `POST /api/new-chat` - 创建新聊天会话
-- `GET /api/chat-sessions` - 获取所有聊天会话
-- `GET /api/chat/<session_id>` - 获取特定会话的消息
-- `POST /api/upload` - 上传CSV文件并预览
-- `POST /api/message` - 发送消息并获取AI响应
-- `GET /api/history/<session_id>` - 获取会话历史记录
+- `GET /` - Main page
+- `POST /api/new-chat` - Create new chat session
+- `GET /api/chat-sessions` - Get all chat sessions
+- `GET /api/chat/<session_id>` - Get messages for a specific session
+- `DELETE /api/chat/<session_id>` - Delete a chat session and associated files
+- `POST /api/upload` - Upload CSV file and preview
+- `POST /api/message` - Send message and get AI response
 
-## 使用示例
+## Usage Examples
 
-1. **上传CSV文件**：点击左侧的"+"按钮上传CSV文件
-2. **查看预览**：上传后自动显示数据预览
-3. **提问**：在输入框中输入自然语言问题，例如：
-   - "显示前10行数据"
-   - "计算平均年龄"
-   - "绘制年龄分布直方图"
-   - "按类别分组统计"
-4. **查看结果**：系统会自动生成代码、执行并展示结果
+1. **Upload CSV file**: Click the "+" button on the left to upload a CSV file
+2. **View preview**: Data preview will be displayed automatically after upload
+3. **Select model**: Choose from GPT-4, Llama 3.3 70B, Gemini 2.0 Flash, or Qwen 2.5 72B
+4. **Ask questions**: Enter natural language questions in the input box, for example:
+   - "Show the first 10 rows of data"
+   - "Calculate the average age"
+   - "Draw a histogram of age distribution"
+   - "Group statistics by category"
+5. **View results**: The system will automatically generate code, execute it, and display results
+6. **View metrics**: Evaluation metrics are automatically calculated and saved in the session directory
 
-## 技术栈
+## Technology Stack
 
-- **后端**: Flask, Python
-- **AI**: OpenAI GPT-4
-- **数据处理**: Pandas, NumPy
-- **可视化**: Matplotlib, Seaborn, Plotly
-- **框架**: Aurite MCP
-- **安全执行**: Smithery (可选)
+- **Backend**: Flask, Python
+- **AI**: OpenAI GPT-4, Llama 3.3 70B, Gemini 2.0 Flash, Qwen 2.5 72B
+- **Data Processing**: Pandas, NumPy
+- **Visualization**: Matplotlib, Seaborn
+- **API Integration**: OpenAI API, OpenRouter API
 
-## 注意事项
+## Notes
 
-- 当前版本使用内存存储聊天会话，重启服务器后数据会丢失
-- 代码执行在本地环境中进行，确保代码安全性
-- 文件上传限制为16MB，仅支持CSV格式
-- 生成的代码仅支持只读操作，不会修改原始数据
+- Chat sessions are stored in the `chat_history/` directory
+- Evaluation metrics are automatically calculated and stored per session
+- Code execution is performed in a local environment, ensuring code security
+- File upload limit is 16MB, CSV format only
+- Generated code supports read-only operations and will not modify original data
 
-## 后续开发
+## Future Development
 
-1. 使用数据库持久化聊天历史
-2. 集成Smithery API进行远程沙箱执行
-3. 支持更多文件格式（Excel, JSON等）
-4. 添加代码编辑和调试功能
-5. 实现结果导出功能
+1. Database persistence for chat history
+2. Support for more file formats (Excel, JSON, etc.)
+3. Code editing and debugging features
+4. Result export functionality
+5. Enhanced evaluation metrics visualization
